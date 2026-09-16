@@ -19,56 +19,68 @@ pipeline{
     }
     stages{
         stage("Install dependencies"){
-            echo "Installing dependencies"
-            sh 'npm ci'
+            steps {
+                echo "Installing dependencies"
+                sh 'npm ci'
+            }
         }
         stage("Dependency security scan"){
-            echo "Running dependency scan"
-            sh 'npm audit --audit-level=high'
+            steps {
+                echo "Running dependency scan"
+                sh 'npm audit --audit-level=high'
+            }
         }
         stage("Unit testing"){
-            echo "Running unit tests"
-            sh 'npm test'
+            steps {
+                echo "Running unit tests"
+                sh 'npm test'
+            }
         }
         stage("Building application"){
-            echo "Building application"
-            //sh 'npm run build'
-            sh 'node --check app.js'
+            steps {
+                echo "Building application"
+                //sh 'npm run build'
+                sh 'node --check app.js'
+            }
         }
         stage("Build docker image"){
-            echo "Building docker image"
-            withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
-                    sh """
-                        docker build \
-                        --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${IMAGE_TAG} \
-                        --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest \
-                    """
-                }
+            steps {
+                echo "Building docker image"
+                withCredentials([
+                        usernamePassword(
+                            credentialsId: 'dockerhub-credentials',
+                            usernameVariable: 'DOCKER_USERNAME',
+                            passwordVariable: 'DOCKER_PASSWORD'
+                        )
+                    ]) {
+                        sh """
+                            docker build \
+                            --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${IMAGE_TAG} \
+                            --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest \
+                        """
+                    }
+            }
         }
         stage("Docker push"){
-            echo "Pushing docker image"
-            withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
-                    sh """
-                        echo "${DOCKER_PASSWORD}" | docker login \
-                                --username "${DOCKER_USERNAME}" \
-                                --password-stdin
+            steps {
+                echo "Pushing docker image"
+                withCredentials([
+                        usernamePassword(
+                            credentialsId: 'dockerhub-credentials',
+                            usernameVariable: 'DOCKER_USERNAME',
+                            passwordVariable: 'DOCKER_PASSWORD'
+                        )
+                    ]) {
+                        sh """
+                            echo "${DOCKER_PASSWORD}" | docker login \
+                                    --username "${DOCKER_USERNAME}" \
+                                    --password-stdin
 
-                        docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${IMAGE_TAG}
-                        docker logout
-                    """
-                }
+                            docker push ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${IMAGE_TAG}
+                            docker logout
+                        """
+                    }
+            }
         }
     }
     post {
