@@ -21,7 +21,7 @@ pipeline{
         stage("Install dependencies"){
             steps {
                 echo "Installing dependencies"
-                sh 'npm ci'
+                sh 'npm ci --verbose'
             }
         }
         stage("Dependency security scan"){
