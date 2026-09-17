@@ -57,6 +57,7 @@ pipeline{
                             docker build \
                             --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:${IMAGE_TAG} \
                             --tag ${DOCKER_USERNAME}/${DOCKER_IMAGE}:latest \
+                            . \
                         """
                     }
             }
