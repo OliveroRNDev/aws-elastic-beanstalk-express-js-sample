@@ -5,7 +5,7 @@ pipeline{
             // Connect to the DinD container trough TLS certificate
             args '''
                 --network jenkins_dind
-                --mount type=volume,source=docker-certs-client,target=/certs/client,readonly
+                -v /certs/client:/certs/client:ro
                 -e DOCKER_HOST=tcp://docker:2376
                 -e DOCKER_CERT_PATH=/certs/client
                 -e DOCKER_TLS_VERIFY=1
