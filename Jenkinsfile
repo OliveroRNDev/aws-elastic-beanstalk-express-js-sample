@@ -1,7 +1,7 @@
 pipeline{
     agent{
         docker{
-            image 'node:16'
+            image '23107560/node16-docker:latest'
             // Connect to the DinD container trough TLS certificate
             args '''
                 --network jenkins_dind
