@@ -43,6 +43,23 @@ pipeline{
                 sh 'node --check app.js'
             }
         }
+        stage("Check Docker"){
+            steps {
+                sh '''
+                    echo "Docker version:"
+                    docker --version
+
+                    echo "Docker environment:"
+                    env | grep DOCKER
+
+                    echo "Certificates:"
+                    ls -la /certs/client
+
+                    echo "Docker info:"
+                    docker info
+                '''
+            }
+        }
         stage("Build docker image"){
             steps {
                 echo "Building docker image"
